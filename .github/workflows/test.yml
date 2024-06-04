@@ -3,19 +3,8 @@
 nane: 构建docker镜像  
   
 # 控制何时运行此操作。当通过UI或API手动触发时，工作流将运行。  
-on:  
-  workflow_dispatch:  
-    # 工作流接受的输入。  
-    inputs:  
-      name:  
-        # 在UI中显示的友好描述，而不是'name'  
-        description: '要打招呼的人'  
-        # 如果没有明确提供值，则使用默认值  
-        default: 'World'  
-        # 为了运行工作流，必须提供输入  
-        required: true  
-        # 输入的数据类型  
-        type: string  
+
+on: [workflow_dispatch]
   
 # 一个工作流运行由一个或多个作业组成，这些作业可以顺序或并行运行  
 jobs:  
@@ -28,4 +17,4 @@ jobs:
     steps:  
     # 使用运行器的shell运行单个命令  
     - name: 发送问候  
-      run: echo "Hello ${{ inputs.name }}"
+      run: echo "Hello 123"
