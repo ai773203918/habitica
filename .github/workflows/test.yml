@@ -6,13 +6,43 @@ on: [workflow_dispatch]
   
 # 一个工作流运行由一个或多个作业组成，这些作业可以顺序或并行运行  
 jobs:  
-  # 这个工作流包含一个名为“greet”的单一作业  
-  greet:  
+  # 工作流作业  
+  docker:  
     # 作业将在哪种类型的运行器上运行  
     runs-on: ubuntu-latest  
   
     # 步骤代表作为作业一部分将执行的任务序列  
     steps:  
+    - name: 检查代码是否在工作目录
+      uses: actions/checkout@v2
+    - name: 安装 docker 镜像编译环境
+      uses: docker/setup-buildx-action@v1
+    # - name: 登录 DockerHub
+    #   uses: docker/login-action@v1
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
     # 使用运行器的shell运行单个命令  
-    - name: 发送问候  
-      run: echo "Hello 123"
+    # - name: 构建
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #       context: .
+    #       platforms: |
+    #         linux/386
+    #         linux/amd64
+    #       push: false
+    #       build-args: |
+    #         APP_NAME=${{ env.APP_NAME }}
+    #         APP_VERSION=${{ env.APP_VERSION }}
+    #       tags: |
+    #         ${{ env.DOCKERHUB_REPO }}:latest
+    #         ${{ env.DOCKERHUB_REPO }}:${{ env.APP_VERSION }}
+    - name: Set up Docker Buildx
+      # 使用buildx来构建镜像，这个工具功能很丰富
+      uses: crazy-max/ghaction-docker-buildx@v1
+      with:
+        buildx-version: latest
+    - name: Build dockerfile (with push)
+      # 构建镜像，用buildx可以同时构建X86和ARM架构的镜像，然后推送到hub.docker.com
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
