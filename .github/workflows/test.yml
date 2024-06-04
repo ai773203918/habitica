@@ -22,27 +22,18 @@ jobs:
     #   with:
     #     username: ${{ secrets.DOCKERHUB_USERNAME }}
     #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-    # 使用运行器的shell运行单个命令  
-    # - name: 构建
-    #     uses: docker/build-push-action@v2
-    #     with:
-    #       context: .
-    #       platforms: |
-    #         linux/386
-    #         linux/amd64
-    #       push: false
-    #       build-args: |
-    #         APP_NAME=${{ env.APP_NAME }}
-    #         APP_VERSION=${{ env.APP_VERSION }}
-    #       tags: |
-    #         ${{ env.DOCKERHUB_REPO }}:latest
-    #         ${{ env.DOCKERHUB_REPO }}:${{ env.APP_VERSION }}
-    - name: Set up Docker Buildx
+    - name: 设置 Docker Buildx
       # 使用buildx来构建镜像，这个工具功能很丰富
       uses: crazy-max/ghaction-docker-buildx@v1
       with:
         buildx-version: latest
-    - name: Build dockerfile (with push)
+    - name: 构建 dockerfile
       # 构建镜像，用buildx可以同时构建X86和ARM架构的镜像，然后推送到hub.docker.com
       run: |
-        docker-compose -f docker-compose.dev.yml up -d
+        docker build -f Dockerfile-Dev -t habitica:latest .
+        docker save -o habitica.tar habitica:latest
+    - name: 下载文件
+      uses: actions/download-artifact@v4
+      with:
+        name: habitica.tar
+        path: habitica.tar
