@@ -3,50 +3,14 @@ name: Test
 # 控制何时运行此操作。当通过UI或API手动触发时，工作流将运行。  
 
 on: [workflow_dispatch]
-  
-# 一个工作流运行由一个或多个作业组成，这些作业可以顺序或并行运行  
-jobs:  
-  # 工作流作业  
-  docker:  
-    # 作业将在哪种类型的运行器上运行  
-    runs-on: ubuntu-latest  
-  
-    # 步骤代表作为作业一部分将执行的任务序列  
-    steps:  
-    - name: 检查代码是否在工作目录
-      uses: actions/checkout@v3
-    - name: 登录 DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: 设置 QEMU
-      uses: docker/setup-qemu-action@v2
-    - name: 设置 Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - name: 编译并上传
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile-Dev
-        platforms: |
-            linux/amd64
-            linux/arm64
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.GITHUB_REPOSITORY_NAME_PART }}:latest
 
-    # - name: 设置 Docker Buildx
-    #   # 使用buildx来构建镜像，这个工具功能很丰富
-    #   uses: crazy-max/ghaction-docker-buildx@v1
-    #   with:
-    #     buildx-version: latest
-    # - name: 构建 dockerfile
-    #   # 构建镜像，用buildx可以同时构建X86和ARM架构的镜像，然后推送到hub.docker.com
-    #   run: |
-    #     docker build -f Dockerfile-Dev -t habitica:latest .
-    #     docker save -o habitica.tar habitica:latest
-    # - name: 下载文件
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: habitica.tar
-    #     path: habitica.tar
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
